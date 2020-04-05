@@ -23,6 +23,7 @@ object Tree {
       // Example cases
       case Thirsty() => "Eh bien, la chance est de votre côté, car nous offrons les meilleures bières de la région !"
       case Hungry() => "Pas de soucis, nous pouvons notamment vous offrir des croissants faits maisons !"
+      case Authentication() => "Bonjour, "
     }
   }
 
@@ -32,4 +33,8 @@ object Tree {
   // Example cases
   case class Thirsty() extends ExprTree
   case class Hungry() extends ExprTree
+  case class Or() extends ExprTree
+  case class And() extends ExprTree
+  case class Plus() extends ExprTree
+  case class Authentication() extends ExprTree
 }
