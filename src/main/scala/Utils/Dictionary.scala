@@ -26,5 +26,10 @@ object Dictionary {
     "assoiffée" -> "assoiffe",
     "affamé" -> "affame",
     "affamée" -> "affame",
+    "mon" -> "mon",
+    "solde" -> "solde",
+    "connaitre" -> "connaitre",
+    "connaître" -> "connaitre",
+    "savoir" -> "connaitre"
   )
 }

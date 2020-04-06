@@ -18,11 +18,11 @@ object UsersInfo {
     */
   // TODO: step 2
   def purchase(user: String, amount: Double): Double = {
-    accounts(user) -= amount
+    print(accounts(user))
     accounts(user)
   }
 
-  def addUser(user: String, amount: Double): Unit = accounts = accounts ++ Map(user->amount)
+  def addUser(user: String, amount: Double): Unit = accounts ++ Map(user->amount)
 
   def addUser(user: String): Unit = accounts = accounts ++ Map(user -> 30)
 
@@ -31,5 +31,7 @@ object UsersInfo {
     * @param user The new active user
     */
   def userIsActive(user: String): Unit = _activeUser = user
+
+  def getAmount(): Double = accounts(_activeUser)
 
 }
