@@ -46,6 +46,9 @@ class Parser(tokenizer: Tokenizer) {
         readToken()
         Hungry()
       }
+      else if(curToken == PSEUDO){
+        Authentication(curValue)
+      }
       else expected(ASSOIFFE, AFFAME)
     }
     else expected(BONJOUR, JE)

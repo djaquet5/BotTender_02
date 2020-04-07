@@ -19,6 +19,8 @@ object Tree {
     def computePrice: Double = ExprTree.this match {
       case AskProductPrice(product: Products.Product, amount: Int) => amount*Products.defaultPrices(product)
       case AskBrandPrice(brand: Brand, amount: Int) => amount*Products.prices(brand)
+      case CommandBrand(brand: Brand, amount: Int) => amount*Products.prices(brand)
+      case CommandProduct(product: Products.Product, amount: Int) => amount*Products.defaultPrices(product)
       case _ => 0.0
     }
 
@@ -31,11 +33,15 @@ object Tree {
       case Thirsty() => "Eh bien, la chance est de votre côté, car nous offrons les meilleures bières de la région !"
       case Hungry() => "Pas de soucis, nous pouvons notamment vous offrir des croissants faits maisons !"
       case Authentication(userName) => "Bonjour, " + userName + " !"
-      case NewAmount(amount) => "votre nouveau" + Amount(amount)
-      case CurrentAmount(amount) => "Le montant actuel de votre" + Amount(amount)
+      case NewAmount(amount) => "votre nouveau" + Amount(amount).reply
+      case CurrentAmount(amount) => "Le montant actuel de votre" + Amount(amount).reply
       case Amount(amount) => " solde est de CHF " + amount
       case And() => " et "
-      case AskPrice() => "Cela coûte CHF " + AskPrice().computePrice
+      case AskPrice() => "Cela coûte CHF "
+      case AskBrandPrice(brand, amount) => AskPrice().reply + AskBrandPrice(brand, amount).computePrice
+      case AskProductPrice(product, amount) => AskPrice().reply + AskProductPrice(product, amount).computePrice
+      case CommandProduct(product, amount) => "Cela coûte CHF " + CommandProduct(product, amount).computePrice
+      case CommandBrand(brand, amount) => "Cela coûte CHF " + CommandBrand(brand, amount).computePrice
     }
   }
 
@@ -48,9 +54,11 @@ object Tree {
   case class And() extends ExprTree
   case class Authentication(userName: String) extends ExprTree
   case class Amount(amount: Double) extends ExprTree
-  case class NewAmount(override val amount: Double) extends Amount(amount)
-  case class CurrentAmount(override val amount: Double) extends Amount(amount)
+  case class NewAmount(amount: Double) extends ExprTree
+  case class CurrentAmount(amount: Double) extends ExprTree
   case class AskPrice() extends ExprTree
-  case class AskProductPrice(product: Products.Product, amount: Int) extends AskPrice
-  case class AskBrandPrice(brand: Brand, amount: Int) extends AskPrice
+  case class AskProductPrice(product: Products.Product, amount: Int) extends ExprTree
+  case class AskBrandPrice(brand: Products.Brand, amount: Int) extends ExprTree
+  case class CommandProduct(product: Products.Product, amount: Int) extends ExprTree
+  case class CommandBrand(brand: Products.Brand, amount: Int) extends ExprTree
 }

@@ -30,6 +30,16 @@ object Dictionary {
     "solde" -> "solde",
     "connaitre" -> "connaitre",
     "connaître" -> "connaitre",
-    "savoir" -> "connaitre"
+    "savoir" -> "connaitre",
+    "quel" -> "quel",
+    "est" -> "etre",
+    "le" -> "le",
+    "prix" -> "prix",
+    "de" -> "de",
+    "combien" -> "combien",
+    "coute" -> "couter",
+    "coutent" -> "couter",
+    "coûte" -> "couter",
+    "coûtent" -> "couter"
   )
 }
