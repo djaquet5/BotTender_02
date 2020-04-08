@@ -10,29 +10,29 @@ object Products {
   type Brand = Map[Product,String]
 
   val BIERE: Product = "biere"
-  val BOXER: Brand = Map{BIERE->"Boxer"}
-  val FARMER: Brand = Map{BIERE->"Farmer"}
-  val WITTEKOP: Brand = Map{BIERE->"Wittekop"}
-  val PUNKIPA: Brand = Map{BIERE->"PunkIPA"}
-  val JACKHAMMER: Brand = Map{BIERE->"Jackhammer"}
-  val TENEBREUSE: Brand = Map{BIERE->"Tenebreuse"}
+  val BOXER: Brand = Map{BIERE->"boxer"}
+  val FARMER: Brand = Map{BIERE->"farmer"}
+  val WITTEKOP: Brand = Map{BIERE->"wittekop"}
+  val PUNKIPA: Brand = Map{BIERE->"punkipa"}
+  val JACKHAMMER: Brand = Map{BIERE->"jackhammer"}
+  val TENEBREUSE: Brand = Map{BIERE->"tenebreuse"}
 
   val CROISSANT: Product = "croissant"
-  val MAISON: Brand = Map{CROISSANT->"Maison"}
-  val CAILLER: Brand = Map{CROISSANT->"Cailler"}
+  val MAISON: Brand = Map{CROISSANT->"maison"}
+  val CAILLER: Brand = Map{CROISSANT->"cailler"}
 
-  val prices: Map[Brand, Int] = Map{
-    BOXER -> 1
-    FARMER -> 1
-    WITTEKOP -> 2
-    PUNKIPA -> 3
-    JACKHAMMER -> 3
-    TENEBREUSE -> 4
-    MAISON -> 2
-    CAILLER -> 2
+  def  brandPrice(brand: Brand): Int = brand match {
+    case BOXER => 1
+    case FARMER => 1
+    case WITTEKOP => 2
+    case PUNKIPA => 3
+    case JACKHAMMER => 3
+    case TENEBREUSE => 4
+    case MAISON => 2
+    case CAILLER => 2
   }
 
-  def defaultPrices(product: Product): Int = product match {
+  def defaultPrice(product: Product): Int = product match {
     case BIERE => 1
     case CROISSANT => 2
   }

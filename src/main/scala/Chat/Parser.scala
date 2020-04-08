@@ -89,7 +89,6 @@ class Parser(tokenizer: Tokenizer) {
         AskProductPrice(
           Products.BIERE
         , numberTmp)
-        //End()
       } else if (curToken == ET) {
         eat(ET)
         AskBrandPrice(Map {
@@ -100,8 +99,7 @@ class Parser(tokenizer: Tokenizer) {
         AskBrandPrice(Map {
           Products.BIERE -> curValue
         }, numberTmp)
-        eat(curToken)
-        parsePhrasesHelperAskPrices()
+        //parsePhrasesHelperAskPrices()
       }
     }
     case CROISSANT => {
@@ -111,7 +109,6 @@ class Parser(tokenizer: Tokenizer) {
         AskProductPrice(
           Products.CROISSANT
         , numberTmp)
-        End()
       } else if (curToken == ET) {
         eat(ET)
         AskBrandPrice(Map {
@@ -130,7 +127,9 @@ class Parser(tokenizer: Tokenizer) {
       eat(ET)
       parsePhrasesHelperAskPrices()
     }
-    case EOL => End()
+    case EOL =>
+      eat(EOL)
+      End()
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
 }

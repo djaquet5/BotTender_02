@@ -17,10 +17,10 @@ object Tree {
       * @return the result of the computation
       */
     def computePrice: Double = ExprTree.this match {
-      case AskProductPrice(product: Products.Product, amount: Int) => amount*Products.defaultPrices(product)
-      case AskBrandPrice(brand: Brand, amount: Int) => amount*Products.prices(brand)
-      case CommandBrand(brand: Brand, amount: Int) => amount*Products.prices(brand)
-      case CommandProduct(product: Products.Product, amount: Int) => amount*Products.defaultPrices(product)
+      case AskProductPrice(product: Products.Product, amount: Int) => amount*Products.defaultPrice(product)
+      case AskBrandPrice(brand: Brand, amount: Int) => amount*Products.brandPrice(brand)
+      case CommandBrand(brand: Brand, amount: Int) => amount*Products.brandPrice(brand)
+      case CommandProduct(product: Products.Product, amount: Int) => amount*Products.defaultPrice(product)
       case _ => 0.0
     }
 
