@@ -34,4 +34,13 @@ object Tokens {
   val DE : Token         = 21
   val COMBIEN : Token    = 22
   val COUTER : Token     = 23
+  // brands
+  val BOXER: Token       = 24
+  val FARMER: Token      = 25
+  val WITTEKOP: Token    = 26
+  val PUNKIPA: Token     = 27
+  val JACKHAMMER: Token  = 28
+  val TENEBREUSE: Token  = 29
+  val MAISON: Token      = 30
+  val CAILLER: Token     = 31
 }

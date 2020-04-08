@@ -40,6 +40,14 @@ object Dictionary {
     "coute" -> "couter",
     "coutent" -> "couter",
     "coûte" -> "couter",
-    "coûtent" -> "couter"
+    "coûtent" -> "couter",
+    "boxer" -> "boxer",
+    "farmer" -> "farmer",
+    "wittekop" -> "wittekop",
+    "punkipa" -> "punkipa",
+    "jackhammer" -> "jackhammer",
+    "tenebreuse" -> "tenebreuse",
+    "maison" -> "maison",
+    "cailler" -> "cailler"
   )
 }

@@ -1,5 +1,7 @@
 package Data
 
+import Chat.Tokens
+
 object Products {
   // TODO: step 2 - here your will have an attribute that will contain the products (e.g. "bière"), their types (e.g. "Boxer"), and their prices (e.g. 2.0).
   // TODO: step 2 - You will also have to find a way to store the default type/brand of a product.
@@ -30,9 +32,9 @@ object Products {
     CAILLER -> 2
   }
 
-  val defaultPrices: Map[Product, Int] = Map{
-    BIERE -> 1
-    CROISSANT -> 2
+  def defaultPrices(product: Product): Int = product match {
+    case BIERE => 1
+    case CROISSANT => 2
   }
 
 

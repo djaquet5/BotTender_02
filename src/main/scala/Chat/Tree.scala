@@ -42,6 +42,7 @@ object Tree {
       case AskProductPrice(product, amount) => AskPrice().reply + AskProductPrice(product, amount).computePrice
       case CommandProduct(product, amount) => "Cela coûte CHF " + CommandProduct(product, amount).computePrice
       case CommandBrand(brand, amount) => "Cela coûte CHF " + CommandBrand(brand, amount).computePrice
+      case End() => "."
     }
   }
 
@@ -61,4 +62,5 @@ object Tree {
   case class AskBrandPrice(brand: Products.Brand, amount: Int) extends ExprTree
   case class CommandProduct(product: Products.Product, amount: Int) extends ExprTree
   case class CommandBrand(brand: Products.Brand, amount: Int) extends ExprTree
+  case class End() extends ExprTree
 }

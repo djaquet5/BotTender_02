@@ -2,13 +2,15 @@ package Chat
 
 import Chat.Tokens._
 import Tree._
-import Data.UsersInfo
+import Data.{Products, UsersInfo}
 
 // TODO - step 4
 class Parser(tokenizer: Tokenizer) {
   import tokenizer._
 
   var curTuple: (String, Token) = ("unknown", UNKNOWN)
+
+  var numberTmp: Int = _
 
   def curValue: String = curTuple._1
   def curToken: Token = curTuple._2
@@ -56,9 +58,79 @@ class Parser(tokenizer: Tokenizer) {
       }
       else expected(ASSOIFFE, AFFAME)
     }
-    else expected(BONJOUR, JE)
+    else if(curToken == QUEL){
+      eat(QUEL)
+      eat(ETRE)
+      eat(LE)
+      eat(PRIX)
+      eat(DE)
+      parsePhrasesHelperAskPrices()
+    }else if(curToken == COMBIEN){
+      eat(COMBIEN)
+      eat(COUTER)
+      parsePhrasesHelperAskPrices()
+    }
+    else expected(BONJOUR, JE, QUEL, COMBIEN)
   }
 
   // Start the process by reading the first token.
   readToken()
+
+  def parsePhrasesHelperAskPrices() : ExprTree = curToken match {
+    case NUM => {
+      numberTmp = curValue.toInt
+      eat(NUM)
+      parsePhrasesHelperAskPrices()
+    }
+    case BIERE => {
+      eat(BIERE)
+      if (curToken == EOL) {
+        eat(EOL)
+        AskProductPrice(
+          Products.BIERE
+        , numberTmp)
+        //End()
+      } else if (curToken == ET) {
+        eat(ET)
+        AskBrandPrice(Map {
+          Products.BIERE -> curValue
+        }, numberTmp)
+        parsePhrasesHelperAskPrices()
+      } else {
+        AskBrandPrice(Map {
+          Products.BIERE -> curValue
+        }, numberTmp)
+        eat(curToken)
+        parsePhrasesHelperAskPrices()
+      }
+    }
+    case CROISSANT => {
+      eat(CROISSANT)
+      if (curToken == EOL) {
+        eat(EOL)
+        AskProductPrice(
+          Products.CROISSANT
+        , numberTmp)
+        End()
+      } else if (curToken == ET) {
+        eat(ET)
+        AskBrandPrice(Map {
+          Products.CROISSANT -> curValue
+        }, numberTmp)
+        parsePhrasesHelperAskPrices()
+      } else {
+        AskBrandPrice(Map {
+          Products.CROISSANT -> curValue
+        }, numberTmp)
+        eat(curToken)
+        parsePhrasesHelperAskPrices()
+      }
+    }
+    case ET => {
+      eat(ET)
+      parsePhrasesHelperAskPrices()
+    }
+    case EOL => End()
+    case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
+  }
 }

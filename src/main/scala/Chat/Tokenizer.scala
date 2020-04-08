@@ -28,6 +28,14 @@ class Tokenizer(input: String) {
     case "de" => DE
     case "combien" => COMBIEN
     case "couter" => COUTER
+    case "boxer" => BOXER
+    case "farmer" => FARMER
+    case "wittekop" => WITTEKOP
+    case "punkipa" => PUNKIPA
+    case "jackhammer" => JACKHAMMER
+    case "tenebreuse" => TENEBREUSE
+    case "maison" => MAISON
+    case "cailler" => CAILLER
     case p if p.startsWith("_") && p.length > 1 => PSEUDO // If the word starts with '_' and has more than one character it is a pseudonym.
     case n if n.forall(Character.isDigit) => NUM // If every character is a number, the word thus is a number.
     case _ => UNKNOWN
