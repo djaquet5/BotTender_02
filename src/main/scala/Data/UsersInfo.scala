@@ -34,4 +34,11 @@ object UsersInfo {
 
   def getAmount(): Double = accounts(_activeUser)
 
+  /**
+    * Check if the user is already registered
+    * @param user The user we want to check
+    * @return True if the user is registered
+    */
+  def exists(user: String): Boolean = accounts.exists(pair => user.equals(pair._1))
+
 }

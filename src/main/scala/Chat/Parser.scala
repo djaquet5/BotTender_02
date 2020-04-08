@@ -2,13 +2,14 @@ package Chat
 
 import Chat.Tokens._
 import Tree._
+import Data.UsersInfo
 
 // TODO - step 4
 class Parser(tokenizer: Tokenizer) {
   import tokenizer._
 
   var curTuple: (String, Token) = ("unknown", UNKNOWN)
-  
+
   def curValue: String = curTuple._1
   def curToken: Token = curTuple._2
 
@@ -47,7 +48,11 @@ class Parser(tokenizer: Tokenizer) {
         Hungry()
       }
       else if(curToken == PSEUDO){
-        Authentication(curValue)
+        if(!Data.UsersInfo.exists(curValue)) {
+          Data.UsersInfo.addUser(curValue)
+        }
+        Data.UsersInfo.userIsActive(curValue)
+        Authentication(curValue.tail.head.toUpper.toString ++ curValue.tail.tail)
       }
       else expected(ASSOIFFE, AFFAME)
     }
