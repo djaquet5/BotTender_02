@@ -84,43 +84,26 @@ class Parser(tokenizer: Tokenizer) {
     }
     case BIERE => {
       eat(BIERE)
-      if (curToken == EOL) {
-        eat(EOL)
-        AskProductPrice(
-          Products.BIERE
-        , numberTmp)
-      } else if (curToken == ET) {
-        eat(ET)
-        AskBrandPrice(Map {
+      if(curToken >= BOXER){
+        Plus(BrandPrice(Map {
           Products.BIERE -> curValue
-        }, numberTmp)
-        parsePhrasesHelperAskPrices()
-      } else {
-        AskBrandPrice(Map {
-          Products.BIERE -> curValue
-        }, numberTmp)
-        //parsePhrasesHelperAskPrices()
+        }, numberTmp), parsePhrasesHelperAskPrices())
+      }else{
+        Plus(ProductPrice(
+          Products.BIERE , numberTmp),
+          parsePhrasesHelperAskPrices())
       }
     }
     case CROISSANT => {
       eat(CROISSANT)
-      if (curToken == EOL) {
-        eat(EOL)
-        AskProductPrice(
-          Products.CROISSANT
-        , numberTmp)
-      } else if (curToken == ET) {
-        eat(ET)
-        AskBrandPrice(Map {
+      if(curToken >= BOXER){
+        Plus(BrandPrice(Map {
           Products.CROISSANT -> curValue
-        }, numberTmp)
-        parsePhrasesHelperAskPrices()
-      } else {
-        AskBrandPrice(Map {
-          Products.CROISSANT -> curValue
-        }, numberTmp)
-        eat(curToken)
-        parsePhrasesHelperAskPrices()
+        }, numberTmp), parsePhrasesHelperAskPrices())
+      }else{
+        Plus(ProductPrice(
+          Products.CROISSANT , numberTmp),
+          parsePhrasesHelperAskPrices())
       }
     }
     case ET => {
@@ -130,6 +113,10 @@ class Parser(tokenizer: Tokenizer) {
     case EOL =>
       eat(EOL)
       End()
+    case x if x >= BOXER =>{
+      eat(curToken)
+      parsePhrasesHelperAskPrices()
+    }
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
 }
