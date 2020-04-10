@@ -6,6 +6,7 @@ import Data.{Products, UsersInfo}
 
 // TODO - step 4
 class Parser(tokenizer: Tokenizer) {
+
   import tokenizer._
 
   var curTuple: (String, Token) = ("unknown", UNKNOWN)
@@ -13,6 +14,7 @@ class Parser(tokenizer: Tokenizer) {
   var numberTmp: Int = _
 
   def curValue: String = curTuple._1
+
   def curToken: Token = curTuple._2
 
   /** Reads the next token and assigns it into the global variable curTuple */
@@ -35,88 +37,150 @@ class Parser(tokenizer: Tokenizer) {
   }
 
   /** the root method of the parser: parses an entry phrase */
-  def parsePhrases() : ExprTree = {
+  def parsePhrases(): ExprTree = {
     if (curToken == BONJOUR) eat(BONJOUR)
     if (curToken == JE) {
       eat(JE)
-      eat(ETRE)
-      if (curToken == ASSOIFFE) {
-        // Here we do not "eat" the token, because we want to have a custom 2-parameters "expected" if the user gave a wrong token.
-        readToken()
-        Thirsty()
-      }
-      else if (curToken == AFFAME) {
-        readToken()
-        Hungry()
-      }
-      else if(curToken == PSEUDO){
-        if(!Data.UsersInfo.exists(curValue)) {
-          Data.UsersInfo.addUser(curValue)
+      if (curToken == ETRE) {
+        eat(ETRE)
+        if (curToken == ASSOIFFE) {
+          // Here we do not "eat" the token, because we want to have a custom 2-parameters "expected" if the user gave a wrong token.
+          readToken()
+          Thirsty()
+        } else if (curToken == AFFAME) {
+          readToken()
+          Hungry()
+        } else if (curToken == PSEUDO) {
+          if (!Data.UsersInfo.exists(curValue)) {
+            Data.UsersInfo.addUser(curValue)
+          }
+          Data.UsersInfo.userIsActive(curValue)
+          Authentication(curValue.tail.head.toUpper.toString ++ curValue.tail.tail)
+        } else {
+          expected(ASSOIFFE, AFFAME, PSEUDO)
         }
-        Data.UsersInfo.userIsActive(curValue)
-        Authentication(curValue.tail.head.toUpper.toString ++ curValue.tail.tail)
+      } else if (curToken == VOULOIR) {
+        if (!Data.UsersInfo.userIsActive()) {
+          while(nextToken()._2 != EOL){
+            readToken()
+          }
+          readToken()
+          InactiveUser()
+        }else {
+          eat(VOULOIR)
+          print(PurchaseStart().reply)
+          parsePhrasesPurchaseHelper()
+        }
       }
-      else expected(ASSOIFFE, AFFAME)
+      else expected(ETRE, VOULOIR)
     }
-    else if(curToken == QUEL){
+    else if (curToken == QUEL) {
       eat(QUEL)
       eat(ETRE)
       eat(LE)
       eat(PRIX)
       eat(DE)
-      parsePhrasesHelperAskPrices()
-    }else if(curToken == COMBIEN){
+      parsePhrasesAskPricesHelper()
+    } else if (curToken == COMBIEN) {
       eat(COMBIEN)
       eat(COUTER)
-      parsePhrasesHelperAskPrices()
+      parsePhrasesAskPricesHelper()
     }
     else expected(BONJOUR, JE, QUEL, COMBIEN)
   }
 
+
   // Start the process by reading the first token.
   readToken()
 
-  def parsePhrasesHelperAskPrices() : ExprTree = curToken match {
+  def parsePhrasesAskPricesHelper(): ExprTree = curToken match {
     case NUM => {
       numberTmp = curValue.toInt
       eat(NUM)
-      parsePhrasesHelperAskPrices()
+      parsePhrasesAskPricesHelper()
     }
     case BIERE => {
       eat(BIERE)
-      if(curToken >= BOXER){
+      // on regarde si on a affaire à une brand ou juste le produit générique
+      if (curToken >= BOXER) {
         Plus(BrandPrice(Map {
           Products.BIERE -> curValue
-        }, numberTmp), parsePhrasesHelperAskPrices())
-      }else{
+        }, numberTmp), parsePhrasesAskPricesHelper())
+      } else {
         Plus(ProductPrice(
-          Products.BIERE , numberTmp),
-          parsePhrasesHelperAskPrices())
+          Products.BIERE, numberTmp),
+          parsePhrasesAskPricesHelper())
       }
     }
     case CROISSANT => {
       eat(CROISSANT)
-      if(curToken >= BOXER){
+      // on regarde si on a affaire à une marque ou juste au produit générique
+      if (curToken >= BOXER) {
         Plus(BrandPrice(Map {
           Products.CROISSANT -> curValue
-        }, numberTmp), parsePhrasesHelperAskPrices())
-      }else{
+        }, numberTmp), parsePhrasesAskPricesHelper())
+      } else {
         Plus(ProductPrice(
-          Products.CROISSANT , numberTmp),
-          parsePhrasesHelperAskPrices())
+          Products.CROISSANT, numberTmp),
+          parsePhrasesAskPricesHelper())
       }
     }
     case ET => {
+      // on mange le ET et on continue de parser notre phrase
       eat(ET)
-      parsePhrasesHelperAskPrices()
+      parsePhrasesAskPricesHelper()
     }
     case EOL =>
+      // on mange le EOL et on finit notre phrase
       eat(EOL)
       End()
-    case x if x >= BOXER =>{
+    case x if x >= BOXER => {
+      // on a affaire à une marque, comme on a pas pu manger le token avant, on le fait ici
       eat(curToken)
-      parsePhrasesHelperAskPrices()
+      parsePhrasesAskPricesHelper()
     }
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
+
+  def parsePhrasesPurchaseHelper(): ExprTree = curToken match {
+    case NUM => {
+      numberTmp = curValue.toInt
+      eat(NUM)
+      parsePhrasesPurchaseHelper()
+    }
+    case BIERE => {
+      eat(BIERE)
+      // on regarde si on a affaire à une brand ou juste le produit générique
+      if (curToken >= BOXER) {
+        Purchase(PurchaseBiereBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
+      } else {
+        Purchase(PurchaseBiere(numberTmp), parsePhrasesPurchaseHelper())
+      }
+    }
+    case CROISSANT => {
+      eat(CROISSANT)
+      // on regarde si on a affaire à une brand ou juste le produit générique
+      if (curToken >= BOXER) {
+        Purchase(PurchaseCroissantBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
+      } else {
+        Purchase(PurchaseCroissant(numberTmp), parsePhrasesPurchaseHelper())
+      }
+    }
+    case ET => {
+      // on mange le ET et on continue de parser notre phrase
+      eat(ET)
+      Purchase(And(), parsePhrasesPurchaseHelper())
+    }
+    case EOL =>
+      // on mange le EOL et on finit notre phrase
+      eat(EOL)
+      End()
+    case x if x >= BOXER => {
+      // on a affaire à une marque, comme on a pas pu manger le token avant, on le fait ici
+      eat(curToken)
+      parsePhrasesPurchaseHelper()
+    }
+    case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
+  }
+
 }

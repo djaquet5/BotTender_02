@@ -16,12 +16,7 @@ object Tree {
       * For example if we had a "+" node, we would add the values of its two children, then return the result.
       * @return the result of the computation
       */
-    def computePrice: Double = ExprTree.this match {/*
-      case AskProductPrice(product: Products.Product, amount: Int) => amount*Products.defaultPrice(product)
-      case AskBrandPrice(brand: Brand, amount: Int) => amount*Products.brandPrice(brand)
-      case CommandBrand(brand: Brand, amount: Int) => amount*Products.brandPrice(brand)
-      case CommandProduct(product: Products.Product, amount: Int) => amount*Products.defaultPrice(product)
-      case _ => 0.0*/
+    def computePrice: Double = ExprTree.this match {
       case ProductPrice(product: Products.Product, amount: Int) => amount*Products.defaultPrice(product)
       case BrandPrice(brand: Brand, amount: Int) => amount*Products.brandPrice(brand)
       case Plus(leftNode: ExprTree, rightNode: ExprTree) => leftNode.computePrice + rightNode.computePrice
@@ -45,7 +40,14 @@ object Tree {
       case BrandPrice(brand, amount) => AskPrice().reply + BrandPrice(brand, amount).computePrice
       case ProductPrice(product, amount) => AskPrice().reply + ProductPrice(product, amount).computePrice
       case Plus(leftNode, rightNode) => AskPrice().reply + Plus(leftNode, rightNode).computePrice
+      case InactiveUser() => "Vous devez vous authentifier!"
       case End() => "."
+      case PurchaseStart() => "Voici donc "
+      case Purchase(leftNode, rightNode) => leftNode.reply + rightNode.reply //+ Plus(leftNode,rightNode) + And().reply + NewAmount(Plus(leftNode,rightNode).computePrice).reply
+      case PurchaseCroissantBrand(amount: Int, brand: String) => PurchaseCroissant(amount).reply + brand
+      case PurchaseCroissant(amount: Int) => amount + " croissants "
+      case PurchaseBiere(amount: Int) => amount + " bières"
+      case PurchaseBiereBrand(amount: Int, brand: String) => amount + " " + brand
     }
   }
 
@@ -65,4 +67,11 @@ object Tree {
   case class BrandPrice(brand: Brand, amount: Int) extends ExprTree
   case class Plus(leftNode: ExprTree, rightNode: ExprTree) extends ExprTree
   case class End() extends ExprTree
+  case class InactiveUser() extends ExprTree
+  case class Purchase(leftNode: ExprTree, rightNode: ExprTree) extends ExprTree
+  case class PurchaseCroissantBrand(amount: Int, brand: String) extends ExprTree
+  case class PurchaseCroissant(amount: Int) extends ExprTree
+  case class PurchaseBiereBrand(amount: Int, brand: String) extends ExprTree
+  case class PurchaseBiere(amount: Int) extends ExprTree
+  case class PurchaseStart() extends ExprTree
 }

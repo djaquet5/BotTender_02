@@ -5,7 +5,7 @@ import scala.collection.mutable
 object UsersInfo {
 
   // Will contain the name of the currently active user; default value is null.
-  private var _activeUser: String = _
+  private var _activeUser: String = null
 
   // TODO: step 2 - create an attribute that will contain each user and its current balance.
   private var accounts: Map[String, Int] = Map()
@@ -33,6 +33,8 @@ object UsersInfo {
   def userIsActive(user: String): Unit = _activeUser = user
 
   def getAmount(): Double = accounts(_activeUser)
+
+  def userIsActive(): Boolean = _activeUser != null
 
   /**
     * Check if the user is already registered
