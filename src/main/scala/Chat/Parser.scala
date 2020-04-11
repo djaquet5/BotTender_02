@@ -43,6 +43,7 @@ class Parser(tokenizer: Tokenizer) {
       eat(JE)
       if (curToken == ETRE) {
         eat(ETRE)
+
         if (curToken == ASSOIFFE) {
           // Here we do not "eat" the token, because we want to have a custom 2-parameters "expected" if the user gave a wrong token.
           readToken()
@@ -54,22 +55,34 @@ class Parser(tokenizer: Tokenizer) {
           if (!Data.UsersInfo.exists(curValue)) {
             Data.UsersInfo.addUser(curValue)
           }
-          Data.UsersInfo.userIsActive(curValue)
+
+          Data.UsersInfo.setActiveUser(curValue)
           Authentication(curValue.tail.head.toUpper.toString ++ curValue.tail.tail)
         } else {
           expected(ASSOIFFE, AFFAME, PSEUDO)
         }
+
       } else if (curToken == VOULOIR) {
-        if (!Data.UsersInfo.userIsActive()) {
+        if (!Data.UsersInfo.isAUserActive()) {
           while(nextToken()._2 != EOL){
             readToken()
           }
           readToken()
           InactiveUser()
-        }else {
+        } else {
           eat(VOULOIR)
-          print(PurchaseStart().reply)
-          parsePhrasesPurchaseHelper()
+
+          // If the user wants to know the balance
+          if (curToken == CONNAITRE) {
+            eat(CONNAITRE)
+            eat(MON)
+//            eat(SOLDE)
+//            print(CurrentAmount(UsersInfo.getAmount()).reply)
+            parsePhrasesAskPricesHelper()
+          } else {
+            print(PurchaseStart().reply)
+            parsePhrasesPurchaseHelper()
+          }
         }
       }
       else expected(ETRE, VOULOIR)
@@ -128,6 +141,12 @@ class Parser(tokenizer: Tokenizer) {
     case ET => {
       // on mange le ET et on continue de parser notre phrase
       eat(ET)
+      parsePhrasesAskPricesHelper()
+    }
+    case SOLDE => {
+      // On affiche le solde de parser notre phrase
+      eat(SOLDE)
+      print(CurrentAmount(UsersInfo.getAmount()).reply)
       parsePhrasesAskPricesHelper()
     }
     case EOL =>

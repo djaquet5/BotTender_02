@@ -4,7 +4,7 @@
 		module="bottender_02-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20200401114732"
+		publication="20200411112427"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>
