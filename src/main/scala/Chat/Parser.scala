@@ -68,8 +68,17 @@ class Parser(tokenizer: Tokenizer) {
           InactiveUser()
         }else {
           eat(VOULOIR)
-          print(PurchaseStart().reply)
-          parsePhrasesPurchaseHelper()
+          // If the user wants to know the balance
+          if (curToken == CONNAITRE) {
+            eat(CONNAITRE)
+            eat(MON)
+            CurrentAmount()
+          }else {
+            if(curToken == COMMANDER){
+              eat(COMMANDER)
+            }
+            Total(PurchaseStart(), parsePhrasesPurchaseHelper())
+          }
         }
       }
       else expected(ETRE, VOULOIR)
@@ -103,9 +112,7 @@ class Parser(tokenizer: Tokenizer) {
       eat(BIERE)
       // on regarde si on a affaire à une brand ou juste le produit générique
       if (curToken >= BOXER) {
-        Plus(BrandPrice(Map {
-          Products.BIERE -> curValue
-        }, numberTmp), parsePhrasesAskPricesHelper())
+        Plus(BrandPrice(Map {Products.BIERE -> curValue}, numberTmp), parsePhrasesAskPricesHelper())
       } else {
         Plus(ProductPrice(
           Products.BIERE, numberTmp),
@@ -120,6 +127,10 @@ class Parser(tokenizer: Tokenizer) {
           Products.CROISSANT -> curValue
         }, numberTmp), parsePhrasesAskPricesHelper())
       } else {
+        //if it's a purchase
+        if(UsersInfo.userIsActive()){
+          UsersInfo.addProduct(Products.CROISSANT, numberTmp)
+        }
         Plus(ProductPrice(
           Products.CROISSANT, numberTmp),
           parsePhrasesAskPricesHelper())
@@ -152,8 +163,10 @@ class Parser(tokenizer: Tokenizer) {
       eat(BIERE)
       // on regarde si on a affaire à une brand ou juste le produit générique
       if (curToken >= BOXER) {
+        UsersInfo.addBrand(Map{Data.Products.BIERE -> curValue}, numberTmp)
         Purchase(PurchaseBiereBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
       } else {
+        UsersInfo.addProduct(Data.Products.BIERE, numberTmp)
         Purchase(PurchaseBiere(numberTmp), parsePhrasesPurchaseHelper())
       }
     }
@@ -161,8 +174,10 @@ class Parser(tokenizer: Tokenizer) {
       eat(CROISSANT)
       // on regarde si on a affaire à une brand ou juste le produit générique
       if (curToken >= BOXER) {
+        UsersInfo.addBrand(Map{Data.Products.CROISSANT -> curValue}, numberTmp)
         Purchase(PurchaseCroissantBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
       } else {
+        UsersInfo.addProduct(Data.Products.CROISSANT, numberTmp)
         Purchase(PurchaseCroissant(numberTmp), parsePhrasesPurchaseHelper())
       }
     }

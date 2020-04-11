@@ -1,6 +1,6 @@
 package Chat
 
-import Data.Products
+import Data.{Products, UsersInfo}
 import Data.Products.Brand
 
 // TODO - step 3
@@ -20,6 +20,16 @@ object Tree {
       case ProductPrice(product: Products.Product, amount: Int) => amount*Products.defaultPrice(product)
       case BrandPrice(brand: Brand, amount: Int) => amount*Products.brandPrice(brand)
       case Plus(leftNode: ExprTree, rightNode: ExprTree) => leftNode.computePrice + rightNode.computePrice
+      case Cost() => {
+        var sum = 0.0
+        for(b <- UsersInfo.getBrands()){
+          sum += BrandPrice(b._1, b._2).computePrice
+        }
+        for(p <- UsersInfo.getProducts()){
+          sum += ProductPrice(p._1, p._2).computePrice
+        }
+        sum
+      }
       case _ => 0.0
     }
 
@@ -32,9 +42,9 @@ object Tree {
       case Thirsty() => "Eh bien, la chance est de votre côté, car nous offrons les meilleures bières de la région !"
       case Hungry() => "Pas de soucis, nous pouvons notamment vous offrir des croissants faits maisons !"
       case Authentication(userName) => "Bonjour, " + userName + " !"
-      case NewAmount(amount) => "votre nouveau" + Amount(amount).reply
-      case CurrentAmount(amount) => "Le montant actuel de votre" + Amount(amount).reply
-      case Amount(amount) => " solde est de CHF " + amount
+      case NewAmount() => "votre nouveau" + Amount().reply
+      case CurrentAmount() => "Le montant actuel de votre" + Amount().reply
+      case Amount() => " solde est de CHF " + UsersInfo.purchase(UsersInfo.activeUser(), Cost().computePrice) + Flush().reply
       case And() => " et "
       case AskPrice() => "Cela coûte CHF "
       case BrandPrice(brand, amount) => AskPrice().reply + BrandPrice(brand, amount).computePrice
@@ -43,11 +53,16 @@ object Tree {
       case InactiveUser() => "Vous devez vous authentifier!"
       case End() => "."
       case PurchaseStart() => "Voici donc "
-      case Purchase(leftNode, rightNode) => leftNode.reply + rightNode.reply //+ Plus(leftNode,rightNode) + And().reply + NewAmount(Plus(leftNode,rightNode).computePrice).reply
+      case Purchase(leftNode, rightNode) => leftNode.reply + rightNode.reply
+      case Total(leftNode, rightNode) => Purchase(leftNode, rightNode).reply + AskPrice().reply +  Cost().computePrice + And().reply + NewAmount().reply
       case PurchaseCroissantBrand(amount: Int, brand: String) => PurchaseCroissant(amount).reply + brand
       case PurchaseCroissant(amount: Int) => amount + " croissants "
       case PurchaseBiere(amount: Int) => amount + " bières"
       case PurchaseBiereBrand(amount: Int, brand: String) => amount + " " + brand
+      case Flush() => {
+        UsersInfo.flushCommand()
+        ""
+      }
     }
   }
 
@@ -59,9 +74,9 @@ object Tree {
   case class Hungry() extends ExprTree
   case class And() extends ExprTree
   case class Authentication(userName: String) extends ExprTree
-  case class Amount(amount: Double) extends ExprTree
-  case class NewAmount(amount: Double) extends ExprTree
-  case class CurrentAmount(amount: Double) extends ExprTree
+  case class Amount() extends ExprTree
+  case class NewAmount() extends ExprTree
+  case class CurrentAmount() extends ExprTree
   case class AskPrice() extends ExprTree
   case class ProductPrice(product: Products.Product, amount: Int) extends ExprTree
   case class BrandPrice(brand: Brand, amount: Int) extends ExprTree
@@ -74,4 +89,7 @@ object Tree {
   case class PurchaseBiereBrand(amount: Int, brand: String) extends ExprTree
   case class PurchaseBiere(amount: Int) extends ExprTree
   case class PurchaseStart() extends ExprTree
+  case class Cost() extends ExprTree
+  case class Total(leftNode: ExprTree, rightNode: ExprTree) extends ExprTree
+  case class Flush() extends ExprTree
 }

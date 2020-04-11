@@ -48,6 +48,7 @@ object Dictionary {
     "jackhammer" -> "jackhammer",
     "tenebreuse" -> "tenebreuse",
     "maison" -> "maison",
-    "cailler" -> "cailler"
+    "cailler" -> "cailler",
+    "commander" -> "commander"
   )
 }
