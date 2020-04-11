@@ -27,16 +27,16 @@ object Tokens {
   val CONNAITRE : Token  = 15
   val MON : Token        = 16
   val SOLDE : Token      = 17
-  // prix
+  // Price
   val QUEL : Token       = 18
   val LE : Token         = 19
   val PRIX : Token       = 20
   val DE : Token         = 21
   val COMBIEN : Token    = 22
   val COUTER : Token     = 23
-  // commande
+  // Order
   val COMMANDER : Token  = 24
-  // brands
+  // Brands
   val BOXER: Token       = 25
   val FARMER: Token      = 26
   val WITTEKOP: Token    = 27

@@ -3,31 +3,6 @@ package Utils
 import Utils.Dictionary.dictionary
 
 object SpellChecker {
-  /*
-  def stringDistanceRec(s1: String, s2: String): Int ={
-
-    def intEditDistance(s1:String, s2:String, n:Int, m:Int ):Int
-    {
-      /* Here n = len(s1) m = len(s2) */
-
-       if(n == 0 && m == 0)  0
-       else if(n == 0) m
-       else if( m == 0 ) n
-
-       /* Recursive Part */
-       else {
-         var a = dit_Distance (s1, s2, n - 1, m - 1) + (s1[n - 1] != s2[m - 1] );
-         var b = Edit_Distance (s1, s2, n - 1, m) + 1; //Deletion
-         var c = Edit_Distance (s1, s2, n, m - 1) + 1; //Insertion
-
-        min (a, b, c)
-      }
-    }
-
-    intEditDistance(s1:String, s2:String, s1.size, s2.size ):Int
-  }
-  */
-
   def stringDistance(s1: String, s2: String): Int = {
     val memo = scala.collection.mutable.Map[(String, String), Int]()
     def min(a: Int, b: Int, c: Int) = Math.min(Math.min(a, b), c)

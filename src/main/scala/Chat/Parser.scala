@@ -6,15 +6,12 @@ import Data.{Products, UsersInfo}
 
 // TODO - step 4
 class Parser(tokenizer: Tokenizer) {
-
   import tokenizer._
 
   var curTuple: (String, Token) = ("unknown", UNKNOWN)
-
   var numberTmp: Int = _
 
   def curValue: String = curTuple._1
-
   def curToken: Token = curTuple._2
 
   /** Reads the next token and assigns it into the global variable curTuple */
@@ -98,10 +95,7 @@ class Parser(tokenizer: Tokenizer) {
     else expected(BONJOUR, JE, QUEL, COMBIEN)
   }
 
-
-  // Start the process by reading the first token.
-  readToken()
-
+  /** Manage the requests to ask some prices */
   def parsePhrasesAskPricesHelper(): ExprTree = curToken match {
     case NUM => {
       numberTmp = curValue.toInt
@@ -110,7 +104,8 @@ class Parser(tokenizer: Tokenizer) {
     }
     case BIERE => {
       eat(BIERE)
-      // on regarde si on a affaire à une brand ou juste le produit générique
+
+      // On regarde si on a affaire à une brand ou juste le produit générique
       if (curToken >= BOXER) {
         Plus(BrandPrice(Map {Products.BIERE -> curValue}, numberTmp), parsePhrasesAskPricesHelper())
       } else {
@@ -121,13 +116,15 @@ class Parser(tokenizer: Tokenizer) {
     }
     case CROISSANT => {
       eat(CROISSANT)
-      // on regarde si on a affaire à une marque ou juste au produit générique
+
+      // On regarde si on a affaire à une marque ou juste au produit générique
       if (curToken >= BOXER) {
         Plus(BrandPrice(Map {
           Products.CROISSANT -> curValue
         }, numberTmp), parsePhrasesAskPricesHelper())
       } else {
-        //if it's a purchase
+
+        // If it's a purchase
         if(UsersInfo.isAActiveUser()){
           UsersInfo.addProduct(Products.CROISSANT, numberTmp)
         }
@@ -137,22 +134,22 @@ class Parser(tokenizer: Tokenizer) {
       }
     }
     case ET => {
-      // on mange le ET et on continue de parser notre phrase
       eat(ET)
       parsePhrasesAskPricesHelper()
     }
     case EOL =>
-      // on mange le EOL et on finit notre phrase
       eat(EOL)
       End()
     case x if x >= BOXER => {
-      // on a affaire à une marque, comme on a pas pu manger le token avant, on le fait ici
+      // On a affaire à une marque, comme on a pas pu manger le token avant, on le fait ici
+      // Ceci permet é l'utilisateur d'écrire "Je veux 2 PunkIPAs" par exemple
       eat(curToken)
       parsePhrasesAskPricesHelper()
     }
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
 
+  /** Manage the requests to purchase somethine */
   def parsePhrasesPurchaseHelper(): ExprTree = curToken match {
     case NUM => {
       numberTmp = curValue.toInt
@@ -163,10 +160,10 @@ class Parser(tokenizer: Tokenizer) {
       eat(BIERE)
       // on regarde si on a affaire à une brand ou juste le produit générique
       if (curToken >= BOXER) {
-        UsersInfo.addBrand(Map{Data.Products.BIERE -> curValue}, numberTmp)
+        UsersInfo.addBrand(Map{Products.BIERE -> curValue}, numberTmp)
         Purchase(PurchaseBiereBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
       } else {
-        UsersInfo.addProduct(Data.Products.BIERE, numberTmp)
+        UsersInfo.addProduct(Products.BIERE, numberTmp)
         Purchase(PurchaseBiere(numberTmp), parsePhrasesPurchaseHelper())
       }
     }
@@ -174,10 +171,10 @@ class Parser(tokenizer: Tokenizer) {
       eat(CROISSANT)
       // on regarde si on a affaire à une brand ou juste le produit générique
       if (curToken >= BOXER) {
-        UsersInfo.addBrand(Map{Data.Products.CROISSANT -> curValue}, numberTmp)
+        UsersInfo.addBrand(Map{Products.CROISSANT -> curValue}, numberTmp)
         Purchase(PurchaseCroissantBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
       } else {
-        UsersInfo.addProduct(Data.Products.CROISSANT, numberTmp)
+        UsersInfo.addProduct(Products.CROISSANT, numberTmp)
         Purchase(PurchaseCroissant(numberTmp), parsePhrasesPurchaseHelper())
       }
     }
@@ -198,4 +195,6 @@ class Parser(tokenizer: Tokenizer) {
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
 
+  // Start the process by reading the first token.
+  readToken()
 }
