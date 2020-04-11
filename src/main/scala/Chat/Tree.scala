@@ -44,7 +44,7 @@ object Tree {
       case Authentication(userName) => "Bonjour, " + userName + " !"
       case NewAmount() => "votre nouveau" + Amount().reply
       case CurrentAmount() => "Le montant actuel de votre" + Amount().reply
-      case Amount() => " solde est de CHF " + UsersInfo.purchase(UsersInfo.activeUser(), Cost().computePrice) + Flush().reply
+      case Amount() => " solde est de CHF " + UsersInfo.purchase(UsersInfo.getActiveUser(), Cost().computePrice) + Flush().reply
       case And() => " et "
       case AskPrice() => "Cela coûte CHF "
       case BrandPrice(brand, amount) => AskPrice().reply + BrandPrice(brand, amount).computePrice

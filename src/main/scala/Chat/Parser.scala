@@ -54,13 +54,13 @@ class Parser(tokenizer: Tokenizer) {
           if (!Data.UsersInfo.exists(curValue)) {
             Data.UsersInfo.addUser(curValue)
           }
-          Data.UsersInfo.userIsActive(curValue)
+          Data.UsersInfo.setActiveUser(curValue)
           Authentication(curValue.tail.head.toUpper.toString ++ curValue.tail.tail)
         } else {
           expected(ASSOIFFE, AFFAME, PSEUDO)
         }
       } else if (curToken == VOULOIR) {
-        if (!Data.UsersInfo.userIsActive()) {
+        if (!Data.UsersInfo.isAActiveUser()) {
           while(nextToken()._2 != EOL){
             readToken()
           }
@@ -128,7 +128,7 @@ class Parser(tokenizer: Tokenizer) {
         }, numberTmp), parsePhrasesAskPricesHelper())
       } else {
         //if it's a purchase
-        if(UsersInfo.userIsActive()){
+        if(UsersInfo.isAActiveUser()){
           UsersInfo.addProduct(Products.CROISSANT, numberTmp)
         }
         Plus(ProductPrice(
