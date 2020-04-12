@@ -3,13 +3,16 @@ package Chat
 import Chat.Tokens._
 import Tree._
 import Data.{Products, UsersInfo}
+import scala.collection.mutable
 
-// TODO - step 4
 class Parser(tokenizer: Tokenizer) {
   import tokenizer._
 
   var curTuple: (String, Token) = ("unknown", UNKNOWN)
   var numberTmp: Int = _
+
+  var tmpBrandCommand: mutable.Map[Products.Brand, Int] = mutable.Map()
+  var tmpProductCommand: mutable.Map[Products.Product, Int] = mutable.Map()
 
   def curValue: String = curTuple._1
   def curToken: Token = curTuple._2
@@ -36,10 +39,13 @@ class Parser(tokenizer: Tokenizer) {
   /** the root method of the parser: parses an entry phrase */
   def parsePhrases(): ExprTree = {
     if (curToken == BONJOUR) eat(BONJOUR)
+
     if (curToken == JE) {
       eat(JE)
+
       if (curToken == ETRE) {
         eat(ETRE)
+
         if (curToken == ASSOIFFE) {
           // Here we do not "eat" the token, because we want to have a custom 2-parameters "expected" if the user gave a wrong token.
           readToken()
@@ -48,32 +54,36 @@ class Parser(tokenizer: Tokenizer) {
           readToken()
           Hungry()
         } else if (curToken == PSEUDO) {
-          if (!Data.UsersInfo.exists(curValue)) {
-            Data.UsersInfo.addUser(curValue)
+          if (!UsersInfo.exists(curValue)) {
+            UsersInfo.addUser(curValue)
           }
-          Data.UsersInfo.setActiveUser(curValue)
+
+          UsersInfo.setActiveUser(curValue)
           Authentication(curValue.tail.head.toUpper.toString ++ curValue.tail.tail)
-        } else {
-          expected(ASSOIFFE, AFFAME, PSEUDO)
-        }
+        } else expected(ASSOIFFE, AFFAME, PSEUDO)
+
       } else if (curToken == VOULOIR) {
-        if (!Data.UsersInfo.isAActiveUser()) {
+        if (!UsersInfo.isAActiveUser()) {
           while(nextToken()._2 != EOL){
             readToken()
           }
+
           readToken()
           InactiveUser()
-        }else {
+        } else {
           eat(VOULOIR)
+
           // If the user wants to know the balance
           if (curToken == CONNAITRE) {
             eat(CONNAITRE)
             eat(MON)
+
             CurrentAmount()
-          }else {
+          } else {
             if(curToken == COMMANDER){
               eat(COMMANDER)
             }
+
             Total(PurchaseStart(), parsePhrasesPurchaseHelper())
           }
         }
@@ -86,10 +96,12 @@ class Parser(tokenizer: Tokenizer) {
       eat(LE)
       eat(PRIX)
       eat(DE)
+
       parsePhrasesAskPricesHelper()
     } else if (curToken == COMBIEN) {
       eat(COMBIEN)
       eat(COUTER)
+
       parsePhrasesAskPricesHelper()
     }
     else expected(BONJOUR, JE, QUEL, COMBIEN)
@@ -100,12 +112,14 @@ class Parser(tokenizer: Tokenizer) {
     case NUM => {
       numberTmp = curValue.toInt
       eat(NUM)
+
       parsePhrasesAskPricesHelper()
     }
+
     case BIERE => {
       eat(BIERE)
 
-      // On regarde si on a affaire à une brand ou juste le produit générique
+      // Check if the token is a brand or the title of the product (e.g. "bière")
       if (curToken >= BOXER) {
         Plus(BrandPrice(Map {Products.BIERE -> curValue}, numberTmp), parsePhrasesAskPricesHelper())
       } else {
@@ -114,11 +128,12 @@ class Parser(tokenizer: Tokenizer) {
           parsePhrasesAskPricesHelper())
       }
     }
+
     case CROISSANT => {
       eat(CROISSANT)
 
-      // On regarde si on a affaire à une marque ou juste au produit générique
-      if (curToken >= BOXER) {
+      // Check if the token is a brand or the title of the product (e.g. "croissant")
+      if (curToken >= CROISSANT) {
         Plus(BrandPrice(Map {
           Products.CROISSANT -> curValue
         }, numberTmp), parsePhrasesAskPricesHelper())
@@ -133,19 +148,23 @@ class Parser(tokenizer: Tokenizer) {
           parsePhrasesAskPricesHelper())
       }
     }
+
     case ET => {
       eat(ET)
       parsePhrasesAskPricesHelper()
     }
+
     case EOL =>
       eat(EOL)
       End()
+
     case x if x >= BOXER => {
-      // On a affaire à une marque, comme on a pas pu manger le token avant, on le fait ici
-      // Ceci permet é l'utilisateur d'écrire "Je veux 2 PunkIPAs" par exemple
+      // The token is a brand. We couldn't eat it before, so we'll eat it now
+      // The user can write a query "Je veux 2 PunkIPAs"
       eat(curToken)
       parsePhrasesAskPricesHelper()
     }
+
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
 
@@ -154,11 +173,14 @@ class Parser(tokenizer: Tokenizer) {
     case NUM => {
       numberTmp = curValue.toInt
       eat(NUM)
+
       parsePhrasesPurchaseHelper()
     }
+
     case BIERE => {
       eat(BIERE)
-      // on regarde si on a affaire à une brand ou juste le produit générique
+
+      // Check if the token is a brand or the title of the product (e.g. "bière")
       if (curToken >= BOXER) {
         UsersInfo.addBrand(Map{Products.BIERE -> curValue}, numberTmp)
         Purchase(PurchaseBiereBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
@@ -167,10 +189,12 @@ class Parser(tokenizer: Tokenizer) {
         Purchase(PurchaseBiere(numberTmp), parsePhrasesPurchaseHelper())
       }
     }
+
     case CROISSANT => {
       eat(CROISSANT)
-      // on regarde si on a affaire à une brand ou juste le produit générique
-      if (curToken >= BOXER) {
+
+      // Check if the token is a brand or the title of the product (e.g. "croissant")
+      if (curToken >= CROISSANT) {
         UsersInfo.addBrand(Map{Products.CROISSANT -> curValue}, numberTmp)
         Purchase(PurchaseCroissantBrand(numberTmp, curValue), parsePhrasesPurchaseHelper())
       } else {
@@ -178,20 +202,23 @@ class Parser(tokenizer: Tokenizer) {
         Purchase(PurchaseCroissant(numberTmp), parsePhrasesPurchaseHelper())
       }
     }
+
     case ET => {
-      // on mange le ET et on continue de parser notre phrase
       eat(ET)
       Purchase(And(), parsePhrasesPurchaseHelper())
     }
+
     case EOL =>
-      // on mange le EOL et on finit notre phrase
       eat(EOL)
       End()
+
     case x if x >= BOXER => {
-      // on a affaire à une marque, comme on a pas pu manger le token avant, on le fait ici
+      // The token is a brand. We couldn't eat it before, so we'll eat it now
+      // The user can write a query "Je veux 2 PunkIPAs"
       eat(curToken)
       parsePhrasesPurchaseHelper()
     }
+
     case _ => expected(BIERE, CROISSANT, NUM, ET, EOL)
   }
 

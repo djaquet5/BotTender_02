@@ -7,11 +7,12 @@ object UsersInfo {
   // Will contain the name of the currently active user; default value is null.
   private var _activeUser: String = null
 
-  // TODO: step 2 - create an attribute that will contain each user and its current balance.
   private var accounts: mutable.Map[String, Double] = mutable.Map()
 
+  // List of the specific product ordered by the user
   private var _activeProductCommand: mutable.Map[Data.Products.Product, Int] = mutable.Map()
 
+  // List of the general product ordered by the user
   private var _activeBrandCommand: mutable.Map[Data.Products.Brand, Int] = mutable.Map()
 
   /**
@@ -20,7 +21,6 @@ object UsersInfo {
     * @param amount the amount to decrease
     * @return the new balance
     */
-  // TODO: step 2
   def purchase(user: String, amount: Double): Double = {
     accounts(user) -= amount
     accounts(user)
@@ -28,7 +28,6 @@ object UsersInfo {
 
   /**
     * Add an account with a balance to the accounts list
-    *
     * src : https://alvinalexander.com/scala/how-to-add-update-remove-mutable-map-elements-scala-cookbook/
     * @param user The user to add
     * @param amount The user's balance
@@ -72,12 +71,37 @@ object UsersInfo {
     */
   def exists(user: String): Boolean = accounts.exists(pair => user.equals(pair._1))
 
-  def addProduct(product: Data.Products.Product, num: Int): mutable.Map[Products.Product, Int] = _activeProductCommand += (product -> num)
+  /**
+    * Add some products to the product list
+    * @param product The product to add to the list
+    * @param num Number of the product to add
+    * @return Product list edited
+    */
+  def addProduct(product: Products.Product, num: Int): mutable.Map[Products.Product, Int] = _activeProductCommand += (product -> num)
+
+  /**
+    * Get the product list
+    * @return The product list
+    */
   def getProducts(): mutable.Map[Data.Products.Product, Int] = _activeProductCommand
 
+  /**
+    * Add some generical products to the brand list
+    * @param brand Brand to add to the list
+    * @param num Number of the brand to add
+    * @return Brand list edited
+    */
   def addBrand(brand: Data.Products.Brand, num: Int): mutable.Map[Products.Brand, Int] = _activeBrandCommand += (brand -> num)
+
+  /**
+    * Get the brand list
+    * @return The brand list
+    */
   def getBrands(): mutable.Map[Data.Products.Brand, Int] = _activeBrandCommand
 
+  /**
+    * Clean the lists after the order is done
+    */
   def flushCommand(): Unit = {
     _activeBrandCommand = mutable.Map()
     _activeProductCommand = mutable.Map()

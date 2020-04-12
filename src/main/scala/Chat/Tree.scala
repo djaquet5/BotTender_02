@@ -3,7 +3,6 @@ package Chat
 import Data.{Products, UsersInfo}
 import Data.Products.Brand
 
-// TODO - step 3
 object Tree {
 
   /**
@@ -51,7 +50,7 @@ object Tree {
       case ProductPrice(product, amount) => AskPrice().reply + ProductPrice(product, amount).computePrice
       case Plus(leftNode, rightNode) => AskPrice().reply + Plus(leftNode, rightNode).computePrice
       case InactiveUser() => "Vous devez vous authentifier!"
-      case End() => "."
+      case End() => ". "
       case PurchaseStart() => "Voici donc "
       case Purchase(leftNode, rightNode) => leftNode.reply + rightNode.reply
       case Total(leftNode, rightNode) => Purchase(leftNode, rightNode).reply + AskPrice().reply +  Cost().computePrice + And().reply + NewAmount().reply
