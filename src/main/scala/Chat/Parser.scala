@@ -24,11 +24,10 @@ class Parser(tokenizer: Tokenizer) {
   private def eat(token: Token): Unit = if (token == curToken) readToken() else expected(token)
 
   /** Complains that what was found was not expected. The method accepts arbitrarily many arguments of type TokenClass */
-  // TODO (BONUS): find a way to display the string value of the tokens (e.g. "BIERE") instead of their integer value (e.g. 6).
   private def expected(token: Token, more: Token*): Nothing =
     fatalError(" expected: " +
-      (token :: more.toList).mkString(" or ") +
-      ", found: " + curToken)
+      (token :: more.toList).map(Tokens.toString).mkString(" or ") +
+      ", found: " + Tokens.toString(curToken))
 
   def fatalError(msg: String): Nothing = {
     println("Fatal error", msg)

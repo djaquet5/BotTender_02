@@ -54,4 +54,58 @@ object Tokens {
   val TENEBREUSE: Token  = 30
   val MAISON: Token      = 31
   val CAILLER: Token     = 32
+
+  def toString(token: Token): String = token match {
+    // Terms
+    case BONJOUR    => "BONJOUR"
+    case JE         => "JE"
+
+    // Actions
+    case ETRE       => "ETRE"
+    case VOULOIR    => "VOULOIR"
+
+    // Operators
+    case ET         => "ET"
+    case OU         => "OU"
+
+    // Products
+    case BIERE      => "BIERE"
+    case CROISSANT  => "CROISSANT"
+
+    // Utils
+    case PSEUDO     => "PSEUDO"
+    case NUM        => "NUM"
+    case UNKNOWN    => "UNKNOWN"
+    case EOL        => "EOL"
+
+    // State of mind
+    case ASSOIFFE   => "ASSOIFFE"
+    case AFFAME     => "AFFAME"
+
+    // Solde
+    case CONNAITRE  => "CONNAITRE"
+    case MON        => "MON"
+    case SOLDE      => "SOLDE"
+
+    // Price
+    case QUEL       => "QUEL"
+    case LE         => "LE"
+    case PRIX       => "PRIX"
+    case DE         => "DE"
+    case COMBIEN    => "COMBIEN"
+    case COUTER     => "COUTER"
+
+    // Order
+    case COMMANDER  => "COMMANDER"
+
+    // Brands
+    case BOXER      => "BOXER"
+    case FARMER     => "FARMER"
+    case WITTEKOP   => "WITTEKIO"
+    case PUNKIPA    => "PUNKIPA"
+    case JACKHAMMER => "JACKHAMMER"
+    case TENEBREUSE => "TENEBREUSE"
+    case MAISON     => "MAISON"
+    case CAILLER    => "CAILLER"
+  }
 }
